@@ -44,7 +44,7 @@ function App() {
     );
 
     if (res.success) {
-      setResponseMessage('Ogłoszenie dodane pomyślnie!');
+      setResponseMessage('Post dodany pomyślnie!');
       setFormState({
         title: '',
         description: '',
@@ -53,7 +53,7 @@ function App() {
         development_time_months: '',
         link: '',
       });
-      setShowForm(false); // schowaj formularz po dodaniu
+      setShowForm(false);
       const updatedAds = await wchl_hackathon_backend.get_ads();
       setAds(updatedAds);
     } else {
@@ -62,101 +62,107 @@ function App() {
   }
 
   return (
-    <main>
-      <h1>Witaj na tablicy ogłoszeń</h1>
-      <p>Znajdziesz tutaj projekty do wspólnego rozwoju oraz ciekawe oferty!.</p>
-      <p>Autorzy: Justyn Odyjas, Igor Maciejewski</p>
-      <button
-        onClick={() => setShowForm(!showForm)}
-        style={{
-          marginBottom: '1rem',
-          backgroundColor: '#0077cc',
-          color: 'white',
-          border: 'none',
-          padding: '0.5rem 1rem',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-      >
-        {showForm ? 'Anuluj' : 'Dodaj ogłoszenie'}
-      </button>
+    <div id="container">
+        <header>
+            <h1 className='title'>DEV GALLERY</h1>
+        </header>
+        <main>
+        <div className='description'>
+            <p className='description'>Witaj! Dev Gallery to miejsce, w którym możesz szybko podzielić się swoimi projektami programistycznymi</p>
+            <p className='description'>Autorzy: Justyn Odyjas, Igor Maciejewski</p>
+        </div>
+        <button
+            onClick={() => setShowForm(!showForm)}
+            // style={{
+            // marginBottom: '1rem',
+            // backgroundColor: '#0077cc',
+            // color: 'white',
+            // border: 'none',
+            // padding: '0.5rem 1rem',
+            // borderRadius: '5px',
+            // cursor: 'pointer',
+            // }}
+        >
+            {showForm ? 'Anuluj' : 'Dodaj ogłoszenie'}
+        </button>
 
-      {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-          <input
-            name="title"
-            placeholder="Tytuł projektu"
-            value={formState.title}
-            onChange={handleChange}
-            required
-            minLength={4}
-          />
-          <textarea
-            name="description"
-            placeholder="Opis"
-            value={formState.description}
-            onChange={handleChange}
-            required
-            minLength={16}
-          />
-          <input
-            name="contact"
-            placeholder="Kontakt"
-            value={formState.contact}
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="technologies"
-            placeholder="Technologie"
-            value={formState.technologies}
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="development_time_months"
-            placeholder="Czas rozwinięcia (miesiące)"
-            type="number"
-            value={formState.development_time_months}
-            onChange={handleChange}
-            required
-            min={0}
-          />
-          <input
-            name="link"
-            placeholder="Link do projektu"
-            value={formState.link}
-            onChange={handleChange}
-          />
-          <button type="submit">Dodaj ogłoszenie</button>
-        </form>
-      )}
+        {showForm && (
+            <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+            <input
+                name="title"
+                placeholder="Tytuł projektu"
+                value={formState.title}
+                onChange={handleChange}
+                required
+                minLength={4}
+            />
+            <textarea
+                name="description"
+                placeholder="Opis"
+                value={formState.description}
+                onChange={handleChange}
+                required
+                minLength={16}
+            />
+            <input
+                name="contact"
+                placeholder="Kontakt"
+                value={formState.contact}
+                onChange={handleChange}
+                required
+            />
+            <input
+                name="technologies"
+                placeholder="Technologie"
+                value={formState.technologies}
+                onChange={handleChange}
+                required
+            />
+            <input
+                name="development_time_months"
+                placeholder="Czas rozwinięcia (miesiące)"
+                type="number"
+                value={formState.development_time_months}
+                onChange={handleChange}
+                required
+                min={0}
+            />
+            <input
+                name="link"
+                placeholder="Link do projektu"
+                value={formState.link}
+                onChange={handleChange}
+            />
+            <button type="submit">Dodaj ogłoszenie</button>
+            </form>
+        )}
 
-      {responseMessage && <p>{responseMessage}</p>}
+        {responseMessage && <p>{responseMessage}</p>}
 
-      <section>
-        <h2>Dodane ogłoszenia</h2>
-        <ul>
-          {ads.length === 0 && <li>Brak ogłoszeń</li>}
-          {ads.map(({ id, ad }) => (
-            <li key={id.toString()}>
-              <h3>{ad.title}</h3>
-              <p>{ad.description}</p>
-              <p><b>Kontakt:</b> {ad.contact}</p>
-              <p><b>Technologie:</b> {ad.technologies}</p>
-              <p><b>Czas rozwinięcia:</b> {ad.development_time_months} miesiące/miesięcy</p>
-              {ad.link && (
-                <p>
-                  <a href={ad.link} target="_blank" rel="noreferrer">
-                    Link do projektu
-                  </a>
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
+        <section>
+            <h2>Dodane ogłoszenia</h2>
+            <ul>
+            {ads.length === 0 && <li>Brak ogłoszeń</li>}
+            {ads.map(({ id, ad }) => (
+                <li key={id.toString()}>
+                <h3>{ad.title}</h3>
+                <p>{ad.description}</p>
+                <p><b>Kontakt:</b> {ad.contact}</p>
+                <p><b>Technologie:</b> {ad.technologies}</p>
+                <p><b>Czas rozwinięcia:</b> {ad.development_time_months} miesiące/miesięcy</p>
+                {ad.link && (
+                    <p>
+                    <a href={ad.link} target="_blank" rel="noreferrer">
+                        Link do projektu
+                    </a>
+                    </p>
+                )}
+                </li>
+            ))}
+            </ul>
+        </section>
+        </main>
+    </div>
   );
 }
 

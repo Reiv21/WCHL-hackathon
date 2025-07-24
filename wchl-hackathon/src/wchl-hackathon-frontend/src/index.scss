@@ -1,71 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+
+
+
 main {
   max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-
-  h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #0077cc;
-  }
+  color: #04e05c;
 
   form {
-    background: #f9f9f9;
+    background-color: #333;
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-bottom: 2rem;
+    border: 2px solid #04e05c;
 
     input,
     textarea {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
+        display: block;
+        width: 90%;
+        padding: 0.6rem 0.8rem;
+        margin: auto;
+        margin-bottom: 1rem;
+        border: 1px solid #04e05c;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.5s ease;
+        background-color: rgb(170, 170, 170);
 
-      &:focus {
-        border-color: #0077cc;
+        &:focus {
+        border-color: #04e05c;
         outline: none;
-      }
+        }
     }
 
     textarea {
       min-height: 80px;
       resize: vertical;
     }
-
-    button {
-      background-color: #0077cc;
-      color: white;
-      font-weight: 600;
-      padding: 0.7rem 1.5rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s ease;
-
-      &:hover {
-        background-color: #005fa3;
-      }
-    }
   }
 
   p {
     font-size: 1rem;
-    color: #d9534f; // czerwień dla błędów/wiadomości
+    color: #d9534f; 
     margin-bottom: 1rem;
     text-align: center;
   }
 
   h2 {
     margin-bottom: 1rem;
-    color: #0077cc;
+    color: #04e05c;
   }
 
   ul {
@@ -76,27 +64,31 @@ main {
     gap: 1rem;
 
     li {
-      border: 1px solid #ddd;
+      border: 1px solid #04e05c;
       padding: 1rem;
       border-radius: 6px;
-      background-color: #fff;
+      background-color: #333;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 
       h3 {
-        
-          margin-top: 0;
-          margin-bottom: 0.5rem;
-          color: #333;
-          font-size: 1.25rem;
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: #04e05c;
+        font-size: 1.25rem;
 
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       p {        
         margin: 0.3rem 0;
-        color: #555;
+        color: rgb(200, 200, 200);
+
+        b {
+            color: #04e05c;
+        }
       }
 
       a {
@@ -112,4 +104,58 @@ main {
     }
   }
 
+}
+
+
+#container > header {
+    font-family: "Silkscreen";
+    font-size: larger;
+    color: #04e05c;
+    text-align: center;
+    background-color: rgb(120, 120, 120);
+    border-bottom: 3px solid black;
+    padding: 20px 0px;
+
+    h1 {
+        margin: 0px;
+    }
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #333;
+}
+
+.description {
+    color: #04e05c;
+    font-family: 'VT323';
+    font-size: larger;
+}
+
+div.description {
+    margin-bottom: 80px;
+}
+
+button {
+    display: block;
+    width: fit-content;
+    background-color: #04e05c;
+    color: white;
+    font-weight: 600;
+    margin: 0px auto 30px auto;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    outline: 0px solid #04e05c;
+    outline-width: 0px;
+    transition: background-color 0.5s ease, color 0.5s ease, outline-width 0.5s ease;
+
+    &:hover {
+        background-color: white;
+        color: #04e05c;
+        outline-width: 2px;
+    }
 }
