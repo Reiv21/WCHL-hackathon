@@ -21,4 +21,5 @@ type AdEntry = record {
 service : {
   add_ad: (text, text, text, text, nat32, text) -> (AddAdResponse);
   get_ads: () -> (vec AdEntry) query;
+  clear_ads: () -> () query;
 }

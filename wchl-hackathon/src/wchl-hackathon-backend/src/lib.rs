@@ -90,3 +90,13 @@ fn get_ads() -> Vec<AdEntry> {
         projects.borrow().iter().map(|(id, ad)| AdEntry { id: *id, ad: ad.clone() }).collect()
     })
 }
+
+#[update]
+fn clear_ads() {
+    PROJECTS.with(|projects| {
+        projects.borrow_mut().clear();
+    });
+    NEXT_ID.with(|id| {
+        *id.borrow_mut() = 1;
+    });
+}

@@ -71,22 +71,30 @@ main {
   ul {
     list-style: none;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
 
     li {
       border: 1px solid #ddd;
       padding: 1rem;
       border-radius: 6px;
-      margin-bottom: 1rem;
       background-color: #fff;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 
       h3 {
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-        color: #333;
+        
+          margin-top: 0;
+          margin-bottom: 0.5rem;
+          color: #333;
+          font-size: 1.25rem;
+
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
       }
 
-      p {
+      p {        
         margin: 0.3rem 0;
         color: #555;
       }
@@ -103,4 +111,5 @@ main {
       }
     }
   }
+
 }

@@ -12,22 +12,17 @@ function App() {
     link: '',
   });
   const [responseMessage, setResponseMessage] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
-  // Pobierz ogłoszenia po załadowaniu komponentu
   useEffect(() => {
-    wchl_hackathon_backend.get_ads().then((data) => {
-      console.log('Received ads:', data);  // <-- do debugowania
-      setAds(data);
-    });
+    wchl_hackathon_backend.get_ads().then(setAds);
   }, []);
 
-  // Obsługa zmiany w formularzu
   function handleChange(event) {
     const { name, value } = event.target;
     setFormState(prev => ({ ...prev, [name]: value }));
   }
 
-  // Obsługa wysłania formularza
   async function handleSubmit(event) {
     event.preventDefault();
     const {
@@ -58,6 +53,7 @@ function App() {
         development_time_months: '',
         link: '',
       });
+      setShowForm(false); // schowaj formularz po dodaniu
       const updatedAds = await wchl_hackathon_backend.get_ads();
       setAds(updatedAds);
     } else {
@@ -67,57 +63,74 @@ function App() {
 
   return (
     <main>
-      <h1>Tablica ogłoszeń</h1>
+      <h1>Witaj na tablicy ogłoszeń</h1>
+      <p>Znajdziesz tutaj projekty do wspólnego rozwoju oraz ciekawe oferty!.</p>
+      <p>Autorzy: Justyn Odyjas, Igor Maciejewski</p>
+      <button
+        onClick={() => setShowForm(!showForm)}
+        style={{
+          marginBottom: '1rem',
+          backgroundColor: '#0077cc',
+          color: 'white',
+          border: 'none',
+          padding: '0.5rem 1rem',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        {showForm ? 'Anuluj' : 'Dodaj ogłoszenie'}
+      </button>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="title"
-          placeholder="Tytuł projektu"
-          value={formState.title}
-          onChange={handleChange}
-          required
-          minLength={4}
-        />
-        <textarea
-          name="description"
-          placeholder="Opis"
-          value={formState.description}
-          onChange={handleChange}
-          required
-          minLength={16}
-        />
-        <input
-          name="contact"
-          placeholder="Kontakt"
-          value={formState.contact}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="technologies"
-          placeholder="Technologie"
-          value={formState.technologies}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="development_time_months"
-          placeholder="Czas rozwinięcia (miesiące)"
-          type="number"
-          value={formState.development_time_months}
-          onChange={handleChange}
-          required
-          min={0}
-        />
-        <input
-          name="link"
-          placeholder="Link do projektu"
-          value={formState.link}
-          onChange={handleChange}
-        />
-
-        <button type="submit">Dodaj ogłoszenie</button>
-      </form>
+      {showForm && (
+        <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+          <input
+            name="title"
+            placeholder="Tytuł projektu"
+            value={formState.title}
+            onChange={handleChange}
+            required
+            minLength={4}
+          />
+          <textarea
+            name="description"
+            placeholder="Opis"
+            value={formState.description}
+            onChange={handleChange}
+            required
+            minLength={16}
+          />
+          <input
+            name="contact"
+            placeholder="Kontakt"
+            value={formState.contact}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="technologies"
+            placeholder="Technologie"
+            value={formState.technologies}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="development_time_months"
+            placeholder="Czas rozwinięcia (miesiące)"
+            type="number"
+            value={formState.development_time_months}
+            onChange={handleChange}
+            required
+            min={0}
+          />
+          <input
+            name="link"
+            placeholder="Link do projektu"
+            value={formState.link}
+            onChange={handleChange}
+          />
+          <button type="submit">Dodaj ogłoszenie</button>
+        </form>
+      )}
 
       {responseMessage && <p>{responseMessage}</p>}
 
@@ -126,7 +139,7 @@ function App() {
         <ul>
           {ads.length === 0 && <li>Brak ogłoszeń</li>}
           {ads.map(({ id, ad }) => (
-            <li key={id.toString()}> {/* toString(), bo id to BigInt */}
+            <li key={id.toString()}>
               <h3>{ad.title}</h3>
               <p>{ad.description}</p>
               <p><b>Kontakt:</b> {ad.contact}</p>
@@ -142,7 +155,6 @@ function App() {
             </li>
           ))}
         </ul>
-
       </section>
     </main>
   );
