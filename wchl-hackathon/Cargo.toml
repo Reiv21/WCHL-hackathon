@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/wchl-hackathon-backend"
+]
+resolver = "2"

@@ -1,0 +1,27 @@
+{
+  "canisters": {
+    "wchl-hackathon-backend": {
+      "candid": "src/wchl-hackathon-backend/wchl-hackathon-backend.did",
+      "package": "wchl-hackathon-backend",
+      "type": "rust"
+    },
+    "wchl-hackathon-frontend": {
+      "dependencies": [
+        "wchl-hackathon-backend"
+      ],
+      "source": [
+        "src/wchl-hackathon-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "wchl-hackathon-frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
