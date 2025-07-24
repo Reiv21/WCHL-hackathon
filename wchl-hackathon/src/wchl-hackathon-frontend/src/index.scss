@@ -1,37 +1,106 @@
-body {
-  font-family: sans-serif;
-  font-size: 1.5rem;
-}
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
 
-img {
-  max-width: 50vw;
-  max-height: 25vw;
-  display: block;
-  margin: auto;
-}
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #0077cc;
+  }
 
-form {
-  display: flex;
-  justify-content: center;
-  gap: 0.5em;
-  flex-flow: row wrap;
-  max-width: 40vw;
-  margin: auto;
-  align-items: baseline;
-}
+  form {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
 
-button[type="submit"] {
-  padding: 5px 20px;
-  margin: 10px auto;
-  float: right;
-}
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
 
-#greeting {
-  margin: 10px auto;
-  padding: 10px 60px;
-  border: 1px solid #222;
-}
+      &:focus {
+        border-color: #0077cc;
+        outline: none;
+      }
+    }
 
-#greeting:empty {
-  display: none;
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    button {
+      background-color: #0077cc;
+      color: white;
+      font-weight: 600;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #005fa3;
+      }
+    }
+  }
+
+  p {
+    font-size: 1rem;
+    color: #d9534f; // czerwień dla błędów/wiadomości
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #0077cc;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      background-color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+      h3 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      p {
+        margin: 0.3rem 0;
+        color: #555;
+      }
+
+      a {
+        color: #0077cc;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover,
+        &:focus {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
 }

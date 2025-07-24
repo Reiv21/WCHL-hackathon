@@ -1,3 +1,24 @@
+type AddAdResponse = record {
+  success: bool;
+  error: opt text;
+};
+
+type ProjectAd = record {
+  title: text;
+  description: text;
+  contact: text;
+  technologies: text;
+  development_time_months: nat32;
+  link: text;
+  owner: principal;
+};
+
+type AdEntry = record {
+  id: nat64;
+  ad: ProjectAd;
+};
+
 service : {
-    "greet": (text) -> (text) query;
+  add_ad: (text, text, text, text, nat32, text) -> (AddAdResponse);
+  get_ads: () -> (vec AdEntry) query;
 }
