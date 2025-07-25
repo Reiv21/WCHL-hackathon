@@ -68,7 +68,7 @@ main {
 
   p {
     font-size: 1rem;
-    color: #d9534f; 
+    color: #04e0b4; 
     margin-bottom: 1rem;
     text-align: center;
   }
@@ -203,8 +203,21 @@ button {
     color: #333;
 }
 
+
 .arrow.red.filled {
     border-color: #e00404;
     background-color: #e00404;
     color: #333;
 }
+
+.downvote-counter {
+    color: #e00404;
+}
+
+body {
+    color: #04e05c;
+}
+
+// .error {
+//     color: #e00404;
+// }

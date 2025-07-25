@@ -162,7 +162,7 @@ function App() {
         setAds(parsedAds);
         console.log('Loaded local ads:', parsedAds.length);
       } else {
-        // Provide sample ads if none exist
+        // provide sample ads if none exist
         const sampleAds = [
           {
             id: 1,
@@ -330,7 +330,7 @@ function App() {
         </header>
         <main>
         <div className='description'>
-            <p className='description'>Witaj! Dev Gallery to miejsce, w którym możesz szybko podzielić się swoimi projektami programistycznymi</p>
+            <p className='description'>Witaj! Dev Gallery to miejsce, w którym możesz szybko podzielić się swoimi projektami programistycznymi lub znaleźć developerów do pomocy</p>
             <p className='description'>Autorzy: Justyn Odyjas, Igor Maciejewski</p>
         </div>
 
