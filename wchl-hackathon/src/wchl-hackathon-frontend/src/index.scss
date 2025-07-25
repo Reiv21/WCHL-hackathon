@@ -181,3 +181,30 @@ button {
         outline-width: 2px;
     }
 }
+
+.arrow {
+    display: block;
+    width: 30%;
+    margin: 10px auto 0px auto;
+    cursor: pointer;
+    font-size: larger;
+    text-align: center;
+    border: 2px solid;
+    border-radius: 8px;
+    border-color: #ddd;
+    background-color: #333;
+    color: #ddd;
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5 ease;
+}
+
+.arrow.green.filled {
+    border-color: #04e05c;
+    background-color: #04e05c;
+    color: #333;
+}
+
+.arrow.red.filled {
+    border-color: #e00404;
+    background-color: #e00404;
+    color: #333;
+}

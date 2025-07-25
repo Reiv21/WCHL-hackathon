@@ -28,6 +28,10 @@ function App() {
     setSearch(event.target.value);
   }
 
+  function handleVote(isVoteUp, adId) {
+    
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const {
@@ -182,6 +186,10 @@ function App() {
                     </a>
                     </p>
                 )}
+                <span class="material-symbols-outlined arrow green filled">keyboard_double_arrow_up</span>
+                <span className="upvote-counter">10</span><span class="material-symbols-outlined arrow green unfilled" onClick={() => handleVote(true, 0)}>keyboard_double_arrow_up</span>
+                <span class="material-symbols-outlined arrow red filled">keyboard_double_arrow_down</span>
+                <span className="downvote-counter">10</span><span class="material-symbols-outlined arrow red unfilled" onClick={() => handleVote(false, 0)}>keyboard_double_arrow_down</span>
                 </li>
             ))}
             </ul>
