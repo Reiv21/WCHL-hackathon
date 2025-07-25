@@ -1,25 +1,80 @@
 type AddAdResponse = record {
-  success: bool;
-  error: opt text;
+  success : bool;
+  error : opt text;
+  ad_id : opt nat64;
+};
+
+type AuthResponse = record {
+  success : bool;
+  is_registered : bool;
+  user_principal : principal;
+};
+
+type VoteResponse = record {
+  success : bool;
+  error : opt text;
+  new_votes_up : nat32;
+  new_votes_down : nat32;
+};
+
+type VoteType = variant {
+  Up;
+  Down;
+};
+
+type VoteEntry = record {
+  ad_id : nat64;
+  vote_type : VoteType;
 };
 
 type ProjectAd = record {
-  title: text;
-  description: text;
-  contact: text;
-  technologies: text;
-  development_time_months: nat32;
-  link: text;
-  owner: principal;
+  title : text;
+  description : text;
+  contact : text;
+  technologies : text;
+  development_time_months : nat32;
+  link : text;
+  owner : principal;
+  votes_up : nat32;
+  votes_down : nat32;
+  created_at : nat64;
+};
+
+type User = record {
+  user_principal : principal;
+  registered_at : nat64;
+  ads_created : vec nat64;
+  votes_cast : vec VoteEntry;
+};
+
+type LogEntry = record {
+  timestamp : nat64;
+  level : text;
+  message : text;
+  user_principal : opt principal;
 };
 
 type AdEntry = record {
-  id: nat64;
-  ad: ProjectAd;
+  id : nat64;
+  ad : ProjectAd;
 };
 
 service : {
-  add_ad: (text, text, text, text, nat32, text) -> (AddAdResponse);
-  get_ads: () -> (vec AdEntry) query;
-  clear_ads: () -> () query;
+  register_user : () -> (AuthResponse);
+  get_auth_status : () -> (AuthResponse) query;
+  
+  add_ad : (text, text, text, text, nat32, text) -> (AddAdResponse);
+  get_ads : () -> (vec AdEntry) query;
+  get_ads_sorted_by_votes : () -> (vec AdEntry) query;
+  get_ads_by_user : (principal) -> (vec AdEntry) query;
+  clear_ads : () -> ();
+  
+  vote_ad : (nat64, VoteType) -> (VoteResponse);
+  remove_vote : (nat64) -> (VoteResponse);
+  get_user_vote_on_ad : (nat64) -> (opt VoteType) query;
+  
+  get_user_profile : () -> (opt User) query;
+  
+  get_logs : (opt nat32) -> (vec LogEntry) query;
+  get_stats : () -> (nat64, nat64, nat64) query;
 }

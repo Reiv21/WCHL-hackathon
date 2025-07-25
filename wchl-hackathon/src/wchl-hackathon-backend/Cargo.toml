@@ -13,3 +13,5 @@ serde = { version = "1.0", features = ["derive"] }
 candid = "0.8"
 ic-cdk = "0.8"
 ic-cdk-macros = "0.8"
+ic-cdk-timers = "0.1"
+time = "0.3"
