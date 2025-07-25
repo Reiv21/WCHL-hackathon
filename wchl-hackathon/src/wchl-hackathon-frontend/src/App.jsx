@@ -3,6 +3,7 @@ import { wchl_hackathon_backend } from 'declarations/wchl-hackathon-backend';
 
 function App() {
   const [ads, setAds] = useState([]);
+  const [search, setSearch] = useState("");
   const [formState, setFormState] = useState({
     title: '',
     description: '',
@@ -21,6 +22,10 @@ function App() {
   function handleChange(event) {
     const { name, value } = event.target;
     setFormState(prev => ({ ...prev, [name]: value }));
+  }
+
+  function handleSearch(event) {
+    setSearch(event.target.value);
   }
 
   async function handleSubmit(event) {
@@ -61,6 +66,10 @@ function App() {
     }
   }
 
+    const filteredAds = ads.filter(({ ad }) =>
+        ad.title.toLowerCase().includes(search.toLowerCase()) || search == ""
+    );
+
   return (
     <div id="container">
         <header>
@@ -88,48 +97,61 @@ function App() {
 
         {showForm && (
             <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+            <label></label>
+            <label htmlFor="title">Tytuł projektu:</label><br/>
             <input
+                id="title"
                 name="title"
-                placeholder="Tytuł projektu"
+                placeholder="Space Shooter"
                 value={formState.title}
                 onChange={handleChange}
                 required
                 minLength={4}
             />
+            <label htmlFor="description">Opis:</label><br/>
             <textarea
+                id="description"
                 name="description"
-                placeholder="Opis"
+                placeholder="Gra polegająca na strzelaniu w przeciwników"
                 value={formState.description}
                 onChange={handleChange}
                 required
                 minLength={16}
             />
+            <label htmlFor="contact">Kontakt:</label><br/>
             <input
+                id="contact"
                 name="contact"
-                placeholder="Kontakt"
+                placeholder="+12 123 123 123"
                 value={formState.contact}
                 onChange={handleChange}
                 required
             />
+            <label htmlFor="technologies">Technologie:</label><br/>
             <input
+                id="technologies"
                 name="technologies"
-                placeholder="Technologie"
+                placeholder="Unity Engine"
                 value={formState.technologies}
                 onChange={handleChange}
                 required
             />
+            <label htmlFor="dev_time">Czas rozwinięcia (miesiące):</label><br/>
             <input
+                id="dev_time"
                 name="development_time_months"
-                placeholder="Czas rozwinięcia (miesiące)"
+                placeholder="8"
                 type="number"
                 value={formState.development_time_months}
                 onChange={handleChange}
                 required
                 min={0}
             />
+            <label htmlFor="link">Link do projektu:</label><br/>
             <input
+                id="link"
                 name="link"
-                placeholder="Link do projektu"
+                placeholder="https://github.com/user/repo"
                 value={formState.link}
                 onChange={handleChange}
             />
@@ -141,9 +163,12 @@ function App() {
 
         <section>
             <h2>Dodane ogłoszenia</h2>
+            <input type="text" placeholder='Wpisz, aby wyszukać...' onChange={handleSearch}/>
             <ul>
-            {ads.length === 0 && <li>Brak ogłoszeń</li>}
-            {ads.map(({ id, ad }) => (
+            {(filteredAds.length === 0) && <li>Brak ogłoszeń</li>}
+            
+            {filteredAds
+            .map(({ id, ad }) => (
                 <li key={id.toString()}>
                 <h3>{ad.title}</h3>
                 <p>{ad.description}</p>

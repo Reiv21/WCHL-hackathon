@@ -19,6 +19,12 @@ main {
     margin-bottom: 2rem;
     border: 2px solid #04e05c;
 
+    label {
+        display: block;
+        width: 90%;
+        margin: 10px auto 0px auto;
+    }
+
     input,
     textarea {
         display: block;
@@ -26,7 +32,7 @@ main {
         padding: 0.6rem 0.8rem;
         margin: auto;
         margin-bottom: 1rem;
-        border: 1px solid #04e05c;
+        border: 2px solid #a2d9b8;
         border-radius: 4px;
         font-size: 1rem;
         transition: border-color 0.5s ease;
@@ -42,6 +48,22 @@ main {
       min-height: 80px;
       resize: vertical;
     }
+  }
+
+  input {
+    width: 30%;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.8rem;
+    border: 2px solid #a2d9b8;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.5s ease;
+    background-color: rgb(170, 170, 170);
+
+    &:focus {
+        border-color: #04e05c;
+        outline: none;
+        }
   }
 
   p {
