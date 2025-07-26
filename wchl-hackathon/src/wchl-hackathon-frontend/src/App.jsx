@@ -137,11 +137,20 @@ function App() {
 
   async function loadAds() {
     try {
-      const storedAds = localStorage.getItem('localAds');
-      if (storedAds) {
-        const parsedAds = JSON.parse(storedAds);
-        setAds(parsedAds);
+      // Try to load from backend first
+      const backendAds = await actor.get_ads_sorted_by_votes();
+      console.log('Backend ads response:', backendAds);
+      
+      if (backendAds && Array.isArray(backendAds) && backendAds.length > 0) {
+        // Convert backend format to frontend format
+        const formattedAds = backendAds.map((item) => ({
+          id: Number(item.id),
+          ad: item.ad
+        }));
+        setAds(formattedAds);
+        console.log('Loaded ads from backend:', formattedAds.length);
       } else {
+        // Fallback to sample data if backend is empty
         const sampleAds = [
           {
             id: 1,
@@ -175,11 +184,33 @@ function App() {
           }
         ];
         setAds(sampleAds);
-        localStorage.setItem('localAds', JSON.stringify(sampleAds));
+        
+        // Try to add sample ads to backend
+        for (const sampleAd of sampleAds) {
+          try {
+            await actor.add_ad(
+              sampleAd.ad.title,
+              sampleAd.ad.description,
+              sampleAd.ad.contact,
+              sampleAd.ad.technologies,
+              sampleAd.ad.development_time_months,
+              sampleAd.ad.link || ""
+            );
+          } catch (error) {
+            console.log('Could not add sample ad to backend:', error);
+          }
+        }
       }
     } catch (error) {
-      console.error('Error loading ads:', error);
-      setAds([]);
+      console.error('Error loading ads from backend, using local fallback:', error);
+      // Fallback to localStorage if backend fails
+      const storedAds = localStorage.getItem('localAds');
+      if (storedAds) {
+        const parsedAds = JSON.parse(storedAds);
+        setAds(parsedAds);
+      } else {
+        setAds([]);
+      }
     }
   }
 
@@ -192,7 +223,7 @@ function App() {
     setSearch(event.target.value);
   }
 
-  function handleVote(isVoteUp, adId) {
+  async function handleVote(isVoteUp, adId) {
     if (!isAuthenticated || !isRegistered) {
       setResponseMessage('You must be logged in and registered to vote.');
       return;
@@ -206,29 +237,65 @@ function App() {
       return;
     }
 
-    const updatedAds = ads.map(adEntry => {
-      if (adEntry.id === adId) {
-        const newAd = { ...adEntry };
-        if (currentVote) {
-          if (currentVote.Up) newAd.ad.votes_up -= 1;
-          if (currentVote.Down) newAd.ad.votes_down -= 1;
-        }
-        if (voteType === 'Up') newAd.ad.votes_up += 1;
-        else newAd.ad.votes_down += 1;
+    try {
+      // Try to vote on backend first
+      const backendVoteType = isVoteUp ? { 'Up': null } : { 'Down': null };
+      const response = await actor.vote_ad(BigInt(adId), backendVoteType);
+      
+      if (response.success) {
+        // Update local state on successful backend vote
+        const updatedAds = ads.map(adEntry => {
+          if (adEntry.id === adId) {
+            const newAd = { ...adEntry };
+            if (currentVote) {
+              if (currentVote.Up) newAd.ad.votes_up -= 1;
+              if (currentVote.Down) newAd.ad.votes_down -= 1;
+            }
+            if (voteType === 'Up') newAd.ad.votes_up += 1;
+            else newAd.ad.votes_down += 1;
+            return newAd;
+          }
+          return adEntry;
+        });
 
-        return newAd;
+        const newUserVotes = { ...userVotes, [adId]: { [voteType]: true } };
+        setUserVotes(newUserVotes);
+        saveUserVotesToStorage(newUserVotes);
+        setAds(updatedAds);
+        
+        setResponseMessage(`Voted ${isVoteUp ? 'up' : 'down'} successfully!`);
+        
+        // Reload ads from backend to get accurate counts
+        await loadAds();
+      } else {
+        setResponseMessage('Vote failed: ' + (response.error || 'Unknown error'));
       }
-      return adEntry;
-    });
+    } catch (error) {
+      console.error('Backend voting failed, using local fallback:', error);
+      
+      // Fallback to local voting
+      const updatedAds = ads.map(adEntry => {
+        if (adEntry.id === adId) {
+          const newAd = { ...adEntry };
+          if (currentVote) {
+            if (currentVote.Up) newAd.ad.votes_up -= 1;
+            if (currentVote.Down) newAd.ad.votes_down -= 1;
+          }
+          if (voteType === 'Up') newAd.ad.votes_up += 1;
+          else newAd.ad.votes_down += 1;
+          return newAd;
+        }
+        return adEntry;
+      });
 
-    const newUserVotes = { ...userVotes, [adId]: { [voteType]: true } };
-    setUserVotes(newUserVotes);
-    saveUserVotesToStorage(newUserVotes);
+      const newUserVotes = { ...userVotes, [adId]: { [voteType]: true } };
+      setUserVotes(newUserVotes);
+      saveUserVotesToStorage(newUserVotes);
+      setAds(updatedAds);
+      localStorage.setItem('localAds', JSON.stringify(updatedAds));
 
-    setAds(updatedAds);
-    localStorage.setItem('localAds', JSON.stringify(updatedAds));
-
-    setResponseMessage(`Voted ${isVoteUp ? 'up' : 'down'}!`);
+      setResponseMessage(`Voted ${isVoteUp ? 'up' : 'down'}! (local mode)`);
+    }
   }
 
   async function handleSubmit(event) {
@@ -248,6 +315,37 @@ function App() {
     }
 
     try {
+      // Try to add to backend first
+      const response = await actor.add_ad(
+        title,
+        description,
+        contact,
+        technologies,
+        parseInt(development_time_months),
+        link || ""
+      );
+      
+      if (response.success) {
+        setResponseMessage('Ad posted successfully to backend!');
+        setFormState({
+          title: '',
+          description: '',
+          contact: '',
+          technologies: '',
+          development_time_months: '',
+          link: '',
+        });
+        setShowForm(false);
+        
+        // Reload ads from backend
+        await loadAds();
+      } else {
+        throw new Error(response.error || 'Backend submission failed');
+      }
+    } catch (error) {
+      console.error('Backend submission failed, using local fallback:', error);
+      
+      // Fallback to local storage
       const newAd = {
         id: Date.now(),
         ad: {
@@ -268,7 +366,7 @@ function App() {
       setAds(newAds);
       localStorage.setItem('localAds', JSON.stringify(newAds));
 
-      setResponseMessage('Ad posted successfully!');
+      setResponseMessage('Ad posted successfully! (local mode)');
       setFormState({
         title: '',
         description: '',
@@ -278,9 +376,6 @@ function App() {
         link: '',
       });
       setShowForm(false);
-    } catch (error) {
-      console.error('Submit error:', error);
-      setResponseMessage(`Error: ${error.message || 'Unknown error'}`);
     }
   }
 
