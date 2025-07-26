@@ -21,7 +21,7 @@ Possible updates:
 How to setup for local dev:
 - You will need to have node.js, dfx
 - Clone repo
-- Get to the project
+- Get to the project directory in terminal (probably WSL2)  ( .../WCHL-hackathon/wchl-hackathon )
 - Run commands:
     dfx start --clean --background1
     dfx deploy wchl-hackathon-backend
