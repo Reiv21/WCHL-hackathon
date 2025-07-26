@@ -26,7 +26,6 @@ How to setup for local dev:
     dfx start --clean --background1
     dfx deploy wchl-hackathon-backend
     dfx deploy wchl-hackathon-frontend
-    echo "Frontend URL: http://localhost:4943/?canisterId=$(dfx canister id wchl-hackathon-frontend)"
 - Click on a link to view app
   
 Made by: Justyn Odyjas, Igor Maciejewski
