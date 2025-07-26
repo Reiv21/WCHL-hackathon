@@ -18,7 +18,6 @@ function App() {
   const [responseMessage, setResponseMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
   
-  // Authentication states
   const [authClient, setAuthClient] = useState(null);
   const [actor, setActor] = useState(wchl_hackathon_backend);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -31,7 +30,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Load user votes when user is authenticated
     if (isAuthenticated && userPrincipal) {
       loadUserVotesFromStorage();
     }
@@ -39,14 +37,12 @@ function App() {
 
   function loadUserVotesFromStorage() {
     if (!userPrincipal) return;
-    
     const storageKey = `userVotes_${userPrincipal}`;
     const storedVotes = localStorage.getItem(storageKey);
     if (storedVotes) {
       try {
         const parsedVotes = JSON.parse(storedVotes);
         setUserVotes(parsedVotes);
-        console.log('Loaded user votes from storage:', parsedVotes);
       } catch (error) {
         console.error('Error parsing stored votes:', error);
         setUserVotes({});
@@ -56,70 +52,60 @@ function App() {
 
   function saveUserVotesToStorage(votes) {
     if (!userPrincipal) return;
-    
     const storageKey = `userVotes_${userPrincipal}`;
     localStorage.setItem(storageKey, JSON.stringify(votes));
-    console.log('Saved user votes to storage:', votes);
   }
 
   async function initAuth() {
-    console.log('Initializing authentication...');
     try {
       const client = await AuthClient.create();
       setAuthClient(client);
 
       const isAuthenticated = await client.isAuthenticated();
-      console.log('Initial authentication status:', isAuthenticated);
       
       if (isAuthenticated) {
         const identity = client.getIdentity();
-        console.log('User is authenticated, identity:', identity.getPrincipal().toString());
         setIsAuthenticated(true);
         setUserPrincipal(identity.getPrincipal().toString());
 
         await register();
         await loadAds();
       } else {
-        console.log('User not authenticated');
         await loadAds();
       }
     } catch (error) {
-      console.error('Error initializing auth:', error);
+      console.error('Auth error:', error);
       await loadAds();
     }
   }
 
   async function login() {
-    console.log('Starting login process...');
     try {
       await authClient.login({
         identityProvider: 'https://identity.ic0.app',
-        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000), // 7 days in nanoseconds
+        maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000),
         onSuccess: async () => {
-          console.log('Login successful!');
           const identity = authClient.getIdentity();
           const principal = identity.getPrincipal();
-          console.log('User principal:', principal.toString());
-          
           setIsAuthenticated(true);
           setUserPrincipal(principal.toString());
-          
+
           const authenticatedActor = createActor(canisterId, {
             agentOptions: { identity },
           });
           setActor(authenticatedActor);
-          
-          setResponseMessage('Zalogowano pomyślnie przez Internet Identity!');
+
+          setResponseMessage('Login successful through Internet Identity!');
           await register();
         },
         onError: (error) => {
-          console.error('Internet Identity login failed:', error);
-          setResponseMessage('Błąd podczas logowania: ' + (error.message || 'Nieznany błąd'));
+          console.error('Login error:', error);
+          setResponseMessage('Login error: ' + (error.message || 'Unknown error'));
         }
       });
     } catch (error) {
-      console.error('Login failed:', error);
-      setResponseMessage('Nie można zalogować się przez Internet Identity. Sprawdź połączenie internetowe.');
+      console.error('Login failure:', error);
+      setResponseMessage('Cannot log in with Internet Identity. Check your internet connection.');
     }
   }
 
@@ -130,45 +116,38 @@ function App() {
     setUserPrincipal(null);
     setActor(wchl_hackathon_backend);
     setUserVotes({});
-    setResponseMessage('Wylogowano pomyślnie!');
+    setResponseMessage('Logged out successfully!');
   }
 
   async function register() {
-    console.log('Attempting to register user...');
     try {
-      // Always use local registration mode
-      console.log('Using local registration mode');
       const identity = authClient.getIdentity();
       const principal = identity.getPrincipal();
       
       setIsRegistered(true);
       setUserPrincipal(principal.toString());
-      setResponseMessage('Zarejestrowano pomyślnie! (tryb lokalny)');
+      setResponseMessage('Registered successfully! (local mode)');
       
       await loadAds();
     } catch (error) {
       console.error('Registration error:', error);
-      setResponseMessage('Błąd podczas rejestracji');
+      setResponseMessage('Registration failed');
     }
   }
 
   async function loadAds() {
-    console.log('Loading ads...');
     try {
-      // Always load from localStorage
       const storedAds = localStorage.getItem('localAds');
       if (storedAds) {
         const parsedAds = JSON.parse(storedAds);
         setAds(parsedAds);
-        console.log('Loaded local ads:', parsedAds.length);
       } else {
-        // provide sample ads if none exist
         const sampleAds = [
           {
             id: 1,
             ad: {
               title: "Frontend Developer - React/TypeScript",
-              description: "Poszukujemy doświadczonego frontend developera do pracy nad platformą e-commerce. Wymagane minimum 3 lata doświadczenia z React i TypeScript.",
+              description: "We are looking for an experienced frontend developer to work on an e-commerce platform. Minimum 3 years of experience with React and TypeScript required.",
               contact: "hr@techcompany.pl",
               technologies: "React, TypeScript, Next.js, Tailwind CSS",
               development_time_months: 6,
@@ -183,7 +162,7 @@ function App() {
             id: 2,
             ad: {
               title: "Mobile App Developer - React Native",
-              description: "Szukam developera do stworzenia aplikacji mobilnej dla fitness startup. Doświadczenie z React Native i integracją z API.",
+              description: "Looking for a developer to create a mobile app for a fitness startup. Experience with React Native and API integration is required.",
               contact: "jobs@fitnessapp.com",
               technologies: "React Native, TypeScript, Firebase",
               development_time_months: 4,
@@ -197,7 +176,6 @@ function App() {
         ];
         setAds(sampleAds);
         localStorage.setItem('localAds', JSON.stringify(sampleAds));
-        console.log('Created sample ads');
       }
     } catch (error) {
       console.error('Error loading ads:', error);
@@ -216,54 +194,41 @@ function App() {
 
   function handleVote(isVoteUp, adId) {
     if (!isAuthenticated || !isRegistered) {
-      setResponseMessage('Musisz być zalogowany i zarejestrowany, aby głosować.');
+      setResponseMessage('You must be logged in and registered to vote.');
       return;
     }
 
     const voteType = isVoteUp ? 'Up' : 'Down';
     const currentVote = userVotes[adId];
-    
-    // Check if user already voted this way
+
     if (currentVote && ((voteType === 'Up' && currentVote.Up) || (voteType === 'Down' && currentVote.Down))) {
-      setResponseMessage('Już zagłosowałeś w ten sposób na to ogłoszenie.');
+      setResponseMessage('You have already voted this way on this ad.');
       return;
     }
-    
+
     const updatedAds = ads.map(adEntry => {
       if (adEntry.id === adId) {
         const newAd = { ...adEntry };
-        
-        // Remove previous vote if exists
         if (currentVote) {
-          if (currentVote.Up) {
-            newAd.ad.votes_up -= 1;
-          } else if (currentVote.Down) {
-            newAd.ad.votes_down -= 1;
-          }
+          if (currentVote.Up) newAd.ad.votes_up -= 1;
+          if (currentVote.Down) newAd.ad.votes_down -= 1;
         }
-        
-        // Add new vote
-        if (voteType === 'Up') {
-          newAd.ad.votes_up += 1;
-        } else {
-          newAd.ad.votes_down += 1;
-        }
-        
+        if (voteType === 'Up') newAd.ad.votes_up += 1;
+        else newAd.ad.votes_down += 1;
+
         return newAd;
       }
       return adEntry;
     });
-    
-    // Update user votes
+
     const newUserVotes = { ...userVotes, [adId]: { [voteType]: true } };
     setUserVotes(newUserVotes);
     saveUserVotesToStorage(newUserVotes);
-    
-    // Update ads
+
     setAds(updatedAds);
     localStorage.setItem('localAds', JSON.stringify(updatedAds));
-    
-    setResponseMessage(`Zagłosowano ${isVoteUp ? 'za' : 'przeciw'}!`);
+
+    setResponseMessage(`Voted ${isVoteUp ? 'up' : 'down'}!`);
   }
 
   async function handleSubmit(event) {
@@ -278,7 +243,7 @@ function App() {
     } = formState;
 
     if (!isAuthenticated || !isRegistered) {
-      setResponseMessage('Musisz być zalogowany i zarejestrowany, aby dodać ogłoszenie.');
+      setResponseMessage('You must be logged in and registered to post an ad.');
       return;
     }
 
@@ -303,7 +268,7 @@ function App() {
       setAds(newAds);
       localStorage.setItem('localAds', JSON.stringify(newAds));
 
-      setResponseMessage('Post dodany pomyślnie!');
+      setResponseMessage('Ad posted successfully!');
       setFormState({
         title: '',
         description: '',
@@ -315,160 +280,154 @@ function App() {
       setShowForm(false);
     } catch (error) {
       console.error('Submit error:', error);
-      setResponseMessage(`Błąd: ${error.message || 'Nieznany błąd'}`);
+      setResponseMessage(`Error: ${error.message || 'Unknown error'}`);
     }
   }
 
-    const filteredAds = ads.filter(({ ad }) =>
-        ad.title.toLowerCase().includes(search.toLowerCase()) || search == ""
-    );
+  const filteredAds = ads.filter(({ ad }) =>
+    ad.title.toLowerCase().includes(search.toLowerCase()) || search === ""
+  );
 
   return (
     <div id="container">
-        <header>
-            <h1 className='title'>DEV GALLERY</h1>
-        </header>
-        <main>
+      <header>
+        <h1 className='title'>DEV GALLERY</h1>
+      </header>
+      <main>
         <div className='description'>
-            <p className='description'>Witaj! Dev Gallery to miejsce, w którym możesz szybko podzielić się swoimi projektami programistycznymi lub znaleźć developerów do pomocy</p>
-            <p className='description'>Autorzy: Justyn Odyjas, Igor Maciejewski</p>
+          <p className='description'>Welcome! Dev Gallery is a place where you can quickly share your programming projects or find developers to collaborate with.</p>
+          <p className='description'>Authors: Justyn Odyjas, Igor Maciejewski</p>
         </div>
 
-        {/* Authentication Section */}
         {!isAuthenticated ? (
           <button onClick={login}>
-            Zaloguj przez Internet Identity
+            Log in with Internet Identity
           </button>
         ) : (
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <p>Zalogowany jako: {userPrincipal}</p>
-            {isRegistered && <p style={{color: '#04e05c'}}>✅ Zarejestrowany</p>}
-            <button onClick={logout}>Wyloguj</button>
+            <p>Logged in as: {userPrincipal}</p>
+            {isRegistered && <p style={{ color: '#04e05c' }}>✅ Registered</p>}
+            <button onClick={logout}>Log out</button>
           </div>
         )}
 
         {isAuthenticated && isRegistered && (
-          <button
-              onClick={() => setShowForm(!showForm)}
-          >
-              {showForm ? 'Anuluj' : 'Dodaj ogłoszenie'}
+          <button onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Cancel' : 'Add new ad'}
           </button>
         )}
 
         {showForm && (
-            <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-            <label></label>
-            <label htmlFor="title">Tytuł projektu:</label><br/>
+          <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+            <label htmlFor="title">Project title:</label><br />
             <input
-                id="title"
-                name="title"
-                placeholder="Space Shooter"
-                value={formState.title}
-                onChange={handleChange}
-                required
-                minLength={4}
+              id="title"
+              name="title"
+              placeholder="Space Shooter"
+              value={formState.title}
+              onChange={handleChange}
+              required
+              minLength={4}
             />
-            <label htmlFor="description">Opis:</label><br/>
+            <label htmlFor="description">Description:</label><br />
             <textarea
-                id="description"
-                name="description"
-                placeholder="Gra polegająca na strzelaniu w przeciwników"
-                value={formState.description}
-                onChange={handleChange}
-                required
-                minLength={16}
+              id="description"
+              name="description"
+              placeholder="A game about shooting enemies"
+              value={formState.description}
+              onChange={handleChange}
+              required
+              minLength={16}
             />
-            <label htmlFor="contact">Kontakt:</label><br/>
+            <label htmlFor="contact">Contact:</label><br />
             <input
-                id="contact"
-                name="contact"
-                placeholder="+12 123 123 123"
-                value={formState.contact}
-                onChange={handleChange}
-                required
+              id="contact"
+              name="contact"
+              placeholder="+12 123 123 123"
+              value={formState.contact}
+              onChange={handleChange}
+              required
             />
-            <label htmlFor="technologies">Technologie:</label><br/>
+            <label htmlFor="technologies">Technologies:</label><br />
             <input
-                id="technologies"
-                name="technologies"
-                placeholder="Unity Engine"
-                value={formState.technologies}
-                onChange={handleChange}
-                required
+              id="technologies"
+              name="technologies"
+              placeholder="Unity Engine"
+              value={formState.technologies}
+              onChange={handleChange}
+              required
             />
-            <label htmlFor="dev_time">Czas rozwinięcia (miesiące):</label><br/>
+            <label htmlFor="dev_time">Development time (months):</label><br />
             <input
-                id="dev_time"
-                name="development_time_months"
-                placeholder="8"
-                type="number"
-                value={formState.development_time_months}
-                onChange={handleChange}
-                required
-                min={0}
+              id="dev_time"
+              name="development_time_months"
+              placeholder="8"
+              type="number"
+              value={formState.development_time_months}
+              onChange={handleChange}
+              required
+              min={0}
             />
-            <label htmlFor="link">Link do projektu:</label><br/>
+            <label htmlFor="link">Project link:</label><br />
             <input
-                id="link"
-                name="link"
-                placeholder="https://github.com/user/repo"
-                value={formState.link}
-                onChange={handleChange}
+              id="link"
+              name="link"
+              placeholder="https://github.com/user/repo"
+              value={formState.link}
+              onChange={handleChange}
             />
-            <button type="submit">Dodaj ogłoszenie</button>
-            </form>
+            <button type="submit">Post Ad</button>
+          </form>
         )}
 
         {responseMessage && <p>{responseMessage}</p>}
 
         <section>
-            <h2>Dodane ogłoszenia</h2>
-            <input type="text" placeholder='Wpisz, aby wyszukać...' onChange={handleSearch}/>
-            <ul>
-            {(filteredAds.length === 0) && <li>Brak ogłoszeń</li>}
-            
-            {filteredAds
-            .map(({ id, ad }) => {
-                const currentVote = userVotes[id];
-                const hasUpvoted = currentVote && currentVote.Up;
-                const hasDownvoted = currentVote && currentVote.Down;
-                
-                return (
+          <h2>Posted Ads</h2>
+          <input type="text" placeholder='Type to search...' onChange={handleSearch} />
+          <ul>
+            {(filteredAds.length === 0) && <li>No ads available</li>}
+            {filteredAds.map(({ id, ad }) => {
+              const currentVote = userVotes[id];
+              const hasUpvoted = currentVote && currentVote.Up;
+              const hasDownvoted = currentVote && currentVote.Down;
+
+              return (
                 <li key={id.toString()}>
-                <h3>{ad.title}</h3>
-                <p>{ad.description}</p>
-                <p><b>Kontakt:</b> {ad.contact}</p>
-                <p><b>Technologie:</b> {ad.technologies}</p>
-                <p><b>Czas rozwinięcia:</b> {ad.development_time_months} miesiące/miesięcy</p>
-                {ad.link && (
+                  <h3>{ad.title}</h3>
+                  <p>{ad.description}</p>
+                  <p><b>Contact:</b> {ad.contact}</p>
+                  <p><b>Technologies:</b> {ad.technologies}</p>
+                  <p><b>Development time:</b> {ad.development_time_months} month(s)</p>
+                  {ad.link && (
                     <p>
-                    <a href={ad.link} target="_blank" rel="noreferrer">
-                        Link do projektu
-                    </a>
+                      <a href={ad.link} target="_blank" rel="noreferrer">
+                        Project link
+                      </a>
                     </p>
-                )}
-                <span 
-                  className={`material-symbols-outlined arrow green ${hasUpvoted ? 'filled' : 'unfilled'}`}
-                  onClick={() => handleVote(true, id)}
-                  style={{ cursor: isAuthenticated && isRegistered ? 'pointer' : 'not-allowed' }}
-                >
-                  keyboard_double_arrow_up
-                </span>
-                <span className="upvote-counter">{ad.votes_up}</span>
-                <span 
-                  className={`material-symbols-outlined arrow red ${hasDownvoted ? 'filled' : 'unfilled'}`}
-                  onClick={() => handleVote(false, id)}
-                  style={{ cursor: isAuthenticated && isRegistered ? 'pointer' : 'not-allowed' }}
-                >
-                  keyboard_double_arrow_down
-                </span>
-                <span className="downvote-counter">{ad.votes_down}</span>
+                  )}
+                  <span 
+                    className={`material-symbols-outlined arrow green ${hasUpvoted ? 'filled' : 'unfilled'}`}
+                    onClick={() => handleVote(true, id)}
+                    style={{ cursor: isAuthenticated && isRegistered ? 'pointer' : 'not-allowed' }}
+                  >
+                    keyboard_double_arrow_up
+                  </span>
+                  <span className="upvote-counter">{ad.votes_up}</span>
+                  <span 
+                    className={`material-symbols-outlined arrow red ${hasDownvoted ? 'filled' : 'unfilled'}`}
+                    onClick={() => handleVote(false, id)}
+                    style={{ cursor: isAuthenticated && isRegistered ? 'pointer' : 'not-allowed' }}
+                  >
+                    keyboard_double_arrow_down
+                  </span>
+                  <span className="downvote-counter">{ad.votes_down}</span>
                 </li>
-                );
+              );
             })}
-            </ul>
+          </ul>
         </section>
-        </main>
+      </main>
     </div>
   );
 }
